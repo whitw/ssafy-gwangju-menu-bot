@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import os
 import json
 from datetime import date
 
@@ -30,17 +31,23 @@ def getRenderString(menu):
     return renderstring
 
 def post(menu, url_hook):
-    headers = {'Content-Type':'application/json'}
-    data = {'text':'bot'}
-    response = requests.post(url_hook,
-                             headers=headers,
-                             data=json.dumps({"text":menu}))
-    
+    response = requests.post(
+            url_hook,
+            headers={'Content-Type':'application/json'},
+            data=json.dumps(
+                    {
+                        "text":menu,
+                        "channel":"test-bot"
+                    }
+                )
+            )
+
 def dailyMenuUpdate():
     url_hook_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'url_hook.txt')
     with open(url_hook_file, 'rt') as f:
-        url_hook = f.read()
-    post(getRenderString(updateMenu(), url_hook)
+        url_hook = f.read().strip()
+    renderstring = getRenderString(updateMenu())
+    post(renderstring, url_hook)
 
 if __name__ == '__main__':
     dailyMenuUpdate()
