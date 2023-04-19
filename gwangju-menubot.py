@@ -36,8 +36,7 @@ def post(menu, url_hook):
             headers={'Content-Type':'application/json'},
             data=json.dumps(
                     {
-                        "text":menu,
-                        "channel":"test-bot"
+                        "text":menu
                     }
                 )
             )
