@@ -7,27 +7,31 @@ from datetime import date
 def updateMenu():
     todayMenu = requests.request('GET','https://front.cjfreshmeal.co.kr/meal/v1/today-all-meal?storeIdx=6442')
     todayMenuLunch = json.loads(todayMenu.text)['data']['2']
-    menu = [0] * 5
+    menu = []
     for i in range(5):
-        menu[i] = {
+        if i >= len(todayMenuLunch):
+            break
+        if todayMenuLunch[i]['corner'] == '서비스코너':
+            break
+        menu.append({
             'name':todayMenuLunch[i]['name'],
             'side':todayMenuLunch[i]['side'],
             'corner':todayMenuLunch[i]['corner'],
             'kcal':todayMenuLunch[i]['kcal'],
             'thumbnailurl':todayMenuLunch[i]['thumbnailUrl']
-        }
+        })
     return menu
 
 def getRenderString(menu):
     renderstring = ''
-    renderstring += '# ' + date.today().strftime("%Y-%m-%d") + ' 오늘의 점심\n'
-    for i in range(5):
-        renderstring += '## ' + str(i+1) + '. ' + menu[i]['corner'] + '\n'
-        renderstring += '### ' + '**' + menu[i]['name'] + '**\n'
-        renderstring += menu[i]['side'] + '\n'
-        renderstring += str(int(menu[i]['kcal'])) + 'kcal\n'
-        renderstring += '![' + menu[i]['name'] + '](' + menu[i]['thumbnailurl'] + ')\n'
-        renderstring += '---\n'
+    renderstring += '# {} 오늘의 점심\n'.format(date.today().strftime("%Y-%m-%d"))
+    for i in range(len(menu)):
+        renderstring += '## {}. {}\n'.format(i+1, menu[i]['corner'])
+        renderstring += '### {}\n'.format(menu[i]['name'])
+        renderstring += '{}\n'.format(menu[i]['side'])
+        renderstring += '{} kcal\n'.format(menu[i]['kcal'])
+        renderstring += '![{}]({} =600)\n'.format(menu[i]['name'], menu[i]['thumbnailurl'])
+        renderstring += '***\n'
     return renderstring
 
 def post(menu, url_hook):
