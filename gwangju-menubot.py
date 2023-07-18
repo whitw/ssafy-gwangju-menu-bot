@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import os
 import json
 from datetime import date
+from datetime import datetime
+import time
 
 def updateMenu():
     todayMenu = requests.request('GET','https://front.cjfreshmeal.co.kr/meal/v1/today-all-meal?storeIdx=6442')
@@ -49,7 +51,22 @@ def dailyMenuUpdate():
     url_hook_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'url_hook.txt')
     with open(url_hook_file, 'rt') as f:
         url_hook = f.read().strip()
-    renderstring = getRenderString(updateMenu())
+    while True:
+        menu = updateMenu()
+        valid = True
+        for m in menu:
+            if not m['thumbnailurl']:
+                valid = False
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                print(f"[{now}]thumbnail for {m['corner']} is not uploaded yet.")
+                time.sleep(300)
+                break
+        if valid:
+            break
+        else:
+            print('Retry...')
+            continue
+    renderstring = getRenderString(menu)
     post(renderstring, url_hook)
 
 if __name__ == '__main__':
