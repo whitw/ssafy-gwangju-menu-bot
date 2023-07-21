@@ -12,6 +12,6 @@ COPY gwangju-menubot.py gwangju-menubot.py
 COPY url_hook.txt url_hook.txt
 
 RUN touch /app/bot.log
-RUN echo "50 10 * * 1-5 /usr/local/bin/python3 /app/gwangju-menubot.py >> /app/bot.log" >> /etc/crontabs/root
+RUN echo "20 10 * * 1-5 /usr/local/bin/python3 /app/gwangju-menubot.py >> /app/bot.log" >> /etc/crontabs/root
 
 CMD ["crond", "-f"]
